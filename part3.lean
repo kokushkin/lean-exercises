@@ -141,7 +141,7 @@ iff.intro
   assume hq: q,
     have hpq: p ∨ q, from or.inr hq,
     show r, from hpqr hpq,
- show (p → r) ∧ (q → r), from and.intro hpr hqr)
+ show (p → r) ∧ (q → r), from ⟨hpr, hqr⟩ )
 
 (assume hprqr: (p → r) ∧ (q → r),
   assume hpq: p ∨ q,
@@ -152,12 +152,84 @@ iff.intro
         show r, from hprqr.right hq)) 
 
 
-example : ¬(p ∨ q) ↔ ¬p ∧ ¬q := sorry
-example : ¬p ∨ ¬q → ¬(p ∧ q) := sorry
-example : ¬(p ∧ ¬p) := sorry
-example : p ∧ ¬q → ¬(p → q) := sorry
-example : ¬p → (p → q) := sorry
-example : (¬p ∨ q) → (p → q) := sorry
-example : p ∨ false ↔ p := sorry
-example : p ∧ false ↔ false := sorry
-example : (p → q) → (¬q → ¬p) := sorry
+example : ¬(p ∨ q) ↔ ¬p ∧ ¬q := 
+iff.intro
+
+(assume npq: ¬(p ∨ q),
+have np: ¬p, from
+  assume hp: p,
+    have hpq: p ∨ q, from or.inl hp,
+    show false, from npq hpq,
+have nq: ¬q, from 
+  assume hq: q,
+    have hpq: p ∨ q, from or.inr hq,
+    show false, from npq hpq,
+show ¬p ∧ ¬q, from ⟨np, nq⟩)
+
+(assume npnq: ¬p ∧ ¬q,
+assume pq: p ∨ q,
+ or.elim pq
+ (assume hp: p,
+  show false, from npnq.left hp)
+ (assume hq: q,
+  show false, from npnq.right hq)
+)
+
+example : ¬p ∨ ¬q → ¬(p ∧ q) := 
+assume npnq: ¬p ∨ ¬q,
+assume hpq: p ∧ q,
+or.elim npnq
+(assume hnp: ¬p,
+show false, from hnp hpq.left)
+(assume hnq: ¬q,
+show false, from hnq hpq.right)
+
+
+example : ¬(p ∧ ¬p) := 
+assume npq: p ∧ ¬p,
+show false, from npq.right npq.left 
+
+example : p ∧ ¬q → ¬(p → q) := 
+assume hpnq: p ∧ ¬q,
+assume hpq: p → q,
+show false, from hpnq.right (hpq hpnq.left)
+
+example : ¬p → (p → q) := 
+assume hnp: ¬p,
+assume hp: p,
+show q, from absurd hp hnp
+
+example : (¬p ∨ q) → (p → q) := 
+assume hnpq: ¬p ∨ q,
+assume hp: p,
+or.elim hnpq
+(assume nhp: ¬p,
+show q, from absurd hp nhp
+)
+(assume hq: q,
+show q, from hq)
+
+example : p ∨ false ↔ p := 
+iff.intro
+(assume hpf: p ∨ false,
+or.elim hpf
+  (assume hp: p,
+  show p , from hp)
+  (assume hf: false,
+  show p, from false.elim hf))
+(assume hp: p,
+show p ∨ false, from or.intro_left false hp )
+
+example : p ∧ false ↔ false := 
+iff.intro
+(assume hpf: p ∧ false,
+show false, from hpf.right)
+(assume hf: false,
+show p ∧ false, from false.elim hf)
+
+example : (p → q) → (¬q → ¬p) := 
+assume hpq: p → q,
+assume hnq: ¬q,
+assume hp: p,
+have hq: q, from hpq hp,
+show false, from hnq hq 
