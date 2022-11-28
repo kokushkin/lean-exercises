@@ -233,3 +233,51 @@ assume hnq: ¬q,
 assume hp: p,
 have hq: q, from hpq hp,
 show false, from hnq hq 
+
+
+
+open classical
+
+variables s : Prop
+
+
+
+example : (p → r ∨ s) → ((p → r) ∨ (p → s)) := 
+assume hprs: p → r ∨ s,
+or.elim (em r)
+  (assume vr: r,
+    or.inl 
+      (show p → r, from
+        assume hp: p,
+        vr)
+  )
+  (assume hnr: ¬r,
+    or.inr
+      (show p → s, from
+        assume hp: p,
+        or.elim (hprs hp)
+          (assume hr: r,
+           show s, from absurd hr hnr)
+          (assume hs: s,
+           show s, from hs
+          )
+        )
+  )
+
+
+
+example : ¬(p ∧ q) → ¬p ∨ ¬q := 
+or.elim (em p)
+  (assume hp : p,
+    or.inr
+      (show ¬q, from
+        assume hq : q,
+        h ⟨hp, hq⟩))
+  (assume hp : ¬p,
+    or.inl hp)
+
+example : ¬(p → q) → p ∧ ¬q := sorry
+example : (p → q) → (¬p ∨ q) := sorry
+example : (¬q → ¬p) → (p → q) := sorry
+example : p ∨ ¬p := sorry
+example : (((p → q) → p) → p) := sorry
