@@ -77,7 +77,7 @@ iff.intro
 
 
 -- distributivity
-example : p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r) := 
+def conjunction_distributivity {p: Prop} {q: Prop} {r: Prop} : p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r) := 
 iff.intro
   (assume hpqr: p ∧ (q ∨ r),
    have hp: p, from hpqr.left,
@@ -152,7 +152,7 @@ iff.intro
         show r, from hprqr.right hq)) 
 
 
-example : ¬(p ∨ q) ↔ ¬p ∧ ¬q := 
+def disjunction_negation: ¬(p ∨ q) ↔ ¬p ∧ ¬q := 
 iff.intro
 
 (assume npq: ¬(p ∨ q),
@@ -174,6 +174,8 @@ assume pq: p ∨ q,
  (assume hq: q,
   show false, from npnq.right hq)
 )
+
+
 
 example : ¬p ∨ ¬q → ¬(p ∧ q) := 
 assume npnq: ¬p ∨ ¬q,
@@ -209,7 +211,7 @@ show q, from absurd hp nhp
 (assume hq: q,
 show q, from hq)
 
-example : p ∨ false ↔ p := 
+def disjunction_with_false : p ∨ false ↔ p := 
 iff.intro
 (assume hpf: p ∨ false,
 or.elim hpf
@@ -266,7 +268,7 @@ or.elim (em r)
 
 
 
-example : ¬(p ∧ q) → ¬p ∨ ¬q := 
+def conjunction_negation {p: Prop} {q: Prop} (h : ¬(p ∧ q)) : ¬p ∨ ¬q :=
 or.elim (em p)
   (assume hp : p,
     or.inr
@@ -276,8 +278,94 @@ or.elim (em p)
   (assume hp : ¬p,
     or.inl hp)
 
-example : ¬(p → q) → p ∧ ¬q := sorry
-example : (p → q) → (¬p ∨ q) := sorry
-example : (¬q → ¬p) → (p → q) := sorry
-example : p ∨ ¬p := sorry
-example : (((p → q) → p) → p) := sorry
+
+theorem dne {p : Prop} (h : ¬¬p) : p :=
+or.elim (em p)
+  (assume hp : p, hp)
+  (assume hnp : ¬p, absurd hnp h)
+
+
+example : ¬(p → q) → p ∧ ¬q := 
+assume npq: ¬(p → q),
+by_cases
+  (assume h1:  p ∧ ¬q, h1)
+  (assume h2: ¬(p ∧ ¬q),
+    have hpq: p → q, from 
+      assume hp: p,
+        have hnpq: ¬p ∨ ¬¬q, from conjunction_negation h2,
+        have hpnpq: p ∧ (¬p ∨ ¬¬q), from ⟨hp, hnpq⟩,
+        have pnppnnq: (p ∧ ¬p) ∨ (p ∧ ¬¬q),
+          from iff.mp conjunction_distributivity hpnpq,
+        or.elim pnppnnq
+          (assume pnp: (p ∧ ¬p),
+            show q, from absurd pnp.left pnp.right)
+          (assume pnnq: (p ∧ ¬¬q),
+            show q, from dne pnnq.right),
+    show p ∧ ¬q, from absurd hpq npq)
+    
+  --  p ∧ ¬(p ∧ ¬q) = p ∧ (¬p ∨ q) =(! p ∧ ¬p ?!?!= false  ) false ∨ (p ∧ q) =
+  -- = p ∧ q = q
+  
+def impication_negation_to_disjunction {p: Prop} {q: Prop} : ¬(p → q) → p ∧ ¬q := 
+assume npq: ¬(p → q),
+by_contradiction 
+  (assume h2: ¬(p ∧ ¬q), 
+  have hpq: p → q, from 
+      assume hp: p,
+        have hnpq: ¬p ∨ ¬¬q, from conjunction_negation h2,
+        have hpnpq: p ∧ (¬p ∨ ¬¬q), from ⟨hp, hnpq⟩,
+        have pnppnnq: (p ∧ ¬p) ∨ (p ∧ ¬¬q),
+          from iff.mp conjunction_distributivity hpnpq,
+        or.elim pnppnnq
+          (assume pnp: (p ∧ ¬p),
+            show q, from absurd pnp.left pnp.right)
+          (assume pnnq: (p ∧ ¬¬q),
+            show q, from dne pnnq.right),
+  show false, from absurd hpq npq)
+
+
+
+example : (p → q) → (¬p ∨ q) := 
+assume hpq: p → q,
+by_cases
+  (assume hp: p, or.inr (hpq hp))
+  (assume hnp: ¬p, or.inl hnp)
+
+example : (¬q → ¬p) → (p → q) := 
+assume npnq: ¬q → ¬p,
+assume hp:p,
+by_cases
+  (assume hq: q, hq)
+  (assume hnq: ¬q, absurd hp (npnq hnq))
+
+example : p ∨ ¬p := 
+by_cases
+  (assume hp: p, or.inl hp)
+  (assume hnp: ¬p, or.inr hnp)
+
+example : (((p → q) → p) → p) := 
+assume hpqp: (p → q) → p,
+by_cases
+  (assume hpq: (p → q), hpqp hpq)
+  (assume nhpq: ¬(p → q), 
+    (impication_negation_to_disjunction nhpq).left )
+
+
+-- Prove ¬(p ↔ ¬p) without using classical logic.
+-- p ↔ ¬p - > false  
+
+example: ¬(p ↔ ¬p) :=
+assume pisnotp: p ↔ ¬p,
+iff.mp pisnotp -- p -> ¬p   , ¬p = p -> false
+pisnotp -- ¬(p <-> ¬p) =  p <-> ¬p  -> false    
+pisnotp -- false
+
+
+example: (p ↔ q) → (q ↔ p) :=
+  assume pq: p ↔ q,
+   iff.intro
+   (assume hq: q,
+    iff.mpr pq hq)
+   (assume hp: p,
+    iff.mp pq hp)
+   
