@@ -60,16 +60,40 @@ iff.intro
     )
  )
 )
-(assume h: ¬ (∃ x, ¬ p x),
+(
+ assume h: ¬ (∃ x, ¬ p x),
  assume w,
+ or.elim (em (p w))
+  (assume pw: p w,
+   show p w, from pw)
+  (assume npw: ¬ p w,
+   show p w, from absurd (exists.intro w npw) h)
+)
+
+
  
 
- )
-
 example : (∃ x, p x) ↔ ¬ (∀ x, ¬ p x) := sorry
+
+
+
+
+
+
 example : (¬ ∃ x, p x) ↔ (∀ x, ¬ p x) := sorry
 example : (¬ ∀ x, p x) ↔ (∃ x, ¬ p x) := sorry
 
 example : (∀ x, p x → r) ↔ (∃ x, p x) → r := sorry
 example (a : α) : (∃ x, p x → r) ↔ (∀ x, p x) → r := sorry
 example (a : α) : (∃ x, r → p x) ↔ (r → ∃ x, p x) := sorry
+
+
+
+
+
+
+
+-- 4.6 exercises
+
+
+-- 3. barber paradox

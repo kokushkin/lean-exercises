@@ -354,11 +354,17 @@ by_cases
 -- Prove ¬(p ↔ ¬p) without using classical logic.
 -- p ↔ ¬p - > false  
 
-example: ¬(p ↔ ¬p) :=
+example: ¬(p ↔ ¬p) :=-
 assume pisnotp: p ↔ ¬p,
 iff.mp pisnotp -- p -> ¬p   , ¬p = p -> false
 pisnotp -- ¬(p <-> ¬p) =  p <-> ¬p  -> false    
 pisnotp -- false
+
+example: ¬(p ↔ ¬p) :=
+assume pisnotp: p ↔ ¬p,
+have h1: p → ¬p  , from iff.mp pisnotp,
+have h2: ¬ (p ↔ ¬p), from h1 pisnotp,
+
 
 
 example: (p ↔ q) → (q ↔ p) :=
