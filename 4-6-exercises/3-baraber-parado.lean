@@ -9,3 +9,13 @@ from (
 
   iff.elim_left (h barber)
 )
+
+
+type mismatch at application
+  pisnotp.mp pisnotp
+term
+  pisnotp
+has type
+  p ↔ ¬p
+but is expected to have type
+  pLean
