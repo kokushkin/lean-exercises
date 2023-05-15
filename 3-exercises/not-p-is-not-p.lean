@@ -38,4 +38,4 @@ have pisnotp: p ↔ ¬ p, from h p,
 have pisnotpeq: (p ↔ ¬ p) ↔ ¬(p ↔ ¬ p), from h pisnotp,
 -- have notPisnotp: ¬(p → ¬ p), from iff.mp (h ()
 
-#check NegNotEq
+#check  NegNotEq
