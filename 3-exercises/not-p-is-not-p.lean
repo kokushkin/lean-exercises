@@ -32,10 +32,14 @@ example: (p ↔ q) → (q ↔ p) :=
 example : ¬ ∀ p, p ↔ ¬ p := sorry
 
 
-def NegNotEq {p: Prop} (h: ∀ p, p ↔ ¬ p):  false := 
+def NegNotEq  (h: ∀ p: Prop, p ↔ ¬ p):  false := 
 assume p: Prop, 
 have pisnotp: p ↔ ¬ p, from h p,
-have pisnotpeq: (p ↔ ¬ p) ↔ ¬(p ↔ ¬ p), from h pisnotp,
--- have notPisnotp: ¬(p → ¬ p), from iff.mp (h ()
+have pisnotpeq: (p ↔ ¬ p) ↔ ¬(p ↔ ¬ p), from h (p ↔ ¬ p),
+have notPisnotp: (p ↔ ¬ p) → ¬(p ↔ ¬ p), from iff.mp pisnotpeq,
+have notPISNOTP: ¬(p ↔ ¬ p), from notPisnotp pisnotp,
+show false, from   notPISNOTP pisnotp
+
+
 
 #check NegNotEq
