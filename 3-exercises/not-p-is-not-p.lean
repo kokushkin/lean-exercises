@@ -33,13 +33,15 @@ example : ¬ ∀ p, p ↔ ¬ p := sorry
 
 
 
-def NegNotEq  (h: ∀ p: Prop, p ↔ ¬ p):  false := 
-assume p: Prop, 
+def NegNotEq  (h: (∀ p: Prop, p ↔ ¬ p)):  false := 
+have anypfalse: Prop → false, from
+(assume p: Prop, 
 have pisnotp: p ↔ ¬ p, from h p,
 have pisnotpeq: (p ↔ ¬ p) ↔ ¬(p ↔ ¬ p), from h (p ↔ ¬ p),
 have notPisnotp: (p ↔ ¬ p) → ¬(p ↔ ¬ p), from iff.mp pisnotpeq,
 have notPISNOTP: ¬(p ↔ ¬ p), from notPisnotp pisnotp,
-show false, from   notPISNOTP pisnotp
+ notPISNOTP pisnotp),
+ anypfalse true
 
 
 #check  NegNotEq
