@@ -65,6 +65,7 @@ example : ¬(p ↔ ¬p) :=
 -- have notPisnotp: (p ↔ ¬ p) → ¬(p ↔ ¬ p), from iff.mp pisnotpeq,
 -- have notPISNOTP: ¬(p ↔ ¬ p), from notPisnotp pisnotp,
 --  notPISNOTP pisnotp
+-- asdasd
 
 def add: Int → Int → Int :=
     assume a, assume b, a + b
